@@ -711,55 +711,24 @@
       letter-spacing: 0.1em;
     }
 
-    /* Hold-to-stop arc */
+    /* Hold-to-stop border ring */
     .hold-svg {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: -1px;
+      left: -1px;
+      width: calc(100% + 2px);
+      height: calc(100% + 2px);
       pointer-events: none;
-      border-radius: 20px;
-      overflow: hidden;
+      border-radius: inherit;
     }
 
-    .hold-arc {
-      fill: none;
-      stroke: rgba(77, 255, 195, 0.55);
-      stroke-width: 3;
-      stroke-linecap: round;
-      /* circumference of rect perimeter approx — we'll use a circle overlay */
-    }
-
-    /* Simpler: circular hold ring centered */
-    .hold-ring-wrap {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 60px;
-      height: 60px;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
-
-    .hold-ring-bg {
-      fill: none;
-      stroke: rgba(77, 255, 195, 0.1);
-      stroke-width: 3;
-    }
-
-    .hold-ring-fg {
+    .hold-rect-fg {
       fill: none;
       stroke: var(--mint);
-      stroke-width: 3;
+      stroke-width: 2;
       stroke-linecap: round;
-      stroke-dasharray: 163.36;
-      /* 2π×26 */
-      stroke-dashoffset: 163.36;
-      transform: rotate(-90deg);
-      transform-origin: 30px 30px;
       transition: stroke-dashoffset 0.05s linear;
-      filter: drop-shadow(0 0 4px rgba(77, 255, 195, 0.7));
+      filter: drop-shadow(0 0 6px rgba(77, 255, 195, 0.8));
     }
 
     /* Voice pill: ring is now in normal flow, so base bottom:-14px positioning works fine.
@@ -963,12 +932,9 @@
     <button class="focus-btn" id="focusStopBtn">
       <div class="focus-btn-icon">■</div>
       <div class="focus-btn-lbl">hold to stop</div>
-      <div class="hold-ring-wrap">
-        <svg viewBox="0 0 60 60" width="60" height="60">
-          <circle class="hold-ring-bg" cx="30" cy="30" r="26" />
-          <circle class="hold-ring-fg" id="holdArc" cx="30" cy="30" r="26" />
-        </svg>
-      </div>
+      <svg class="hold-svg">
+        <rect class="hold-rect-fg" id="holdArc" />
+      </svg>
     </button>
   </div>
 
@@ -1003,7 +969,7 @@
     const holdArc = document.getElementById('holdArc');
     const focusStopBtn = document.getElementById('focusStopBtn');
     const HOLD_DURATION = 2000; // ms
-    const HOLD_CIRC = 163.36; // 2π×26
+    let holdLength = 0;
     let holdTimer = null;
     let holdStart = null;
     let holdRAF = null;
@@ -1042,13 +1008,31 @@
     // Hold-to-stop logic
     function holdProgress(elapsed) {
       const frac = Math.min(elapsed / HOLD_DURATION, 1);
-      const offset = HOLD_CIRC * (1 - frac);
+      const offset = holdLength * (1 - frac);
       holdArc.style.strokeDashoffset = offset;
     }
 
     function startHold(e) {
       e.preventDefault();
       holdStart = Date.now();
+
+      const w = focusStopBtn.offsetWidth;
+      const h = focusStopBtn.offsetHeight;
+      const rxStr = getComputedStyle(focusStopBtn).borderRadius;
+      const rx = parseFloat(rxStr) || 20;
+
+      holdArc.setAttribute('x', '1');
+      holdArc.setAttribute('y', '1');
+      holdArc.setAttribute('width', Math.max(0, w));
+      holdArc.setAttribute('height', Math.max(0, h));
+      holdArc.setAttribute('rx', rx);
+      holdArc.parentElement.setAttribute('viewBox', `0 0 ${w + 2} ${h + 2}`);
+
+      holdLength = holdArc.getTotalLength();
+      if (!holdLength) holdLength = (w + h) * 2;
+      holdArc.style.strokeDasharray = holdLength;
+      holdArc.style.strokeDashoffset = holdLength;
+
       function animate() {
         const elapsed = Date.now() - holdStart;
         holdProgress(elapsed);
@@ -1066,7 +1050,7 @@
     function cancelHold() {
       if (holdRAF) { cancelAnimationFrame(holdRAF); holdRAF = null; }
       holdStart = null;
-      holdArc.style.strokeDashoffset = HOLD_CIRC;
+      holdArc.style.strokeDashoffset = holdLength;
     }
 
     focusStopBtn.addEventListener('mousedown', startHold);

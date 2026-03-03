@@ -3,7 +3,22 @@
 ## 2026-03-03 | Session
 
 ### Started
-- TASK-003: Separate time wheel picker from the clock circle, create a setup screen view.
+- TASK-004: Move the "hold to stop" option progress to the border of the button.
+
+### Completed
+- TASK-004: Hold progress on stop button border
+  - `index.html`:712-731 — Replaced `.hold-svg` CSS and removed `.hold-ring-wrap` circle styles, replacing with `.hold-svg` set to `-1px` absolute positioning to trace the exact border shape.
+  - `index.html`:965-967 — Updated the markup in `#focusStopBtn` to use the dynamic `width=100%` svg with an injected `rect`.
+  - `index.html`:1042-1066 — Updated `startHold()` logic to measure the button's `offsetWidth`, `offsetHeight`, and computed `borderRadius` dynamically when pressed. The `rect` coordinates and `viewBox` are calculated sequentially to obtain absolute pixel tracing limits using `getTotalLength()`.
+
+### Decisions (and why)
+- Used a dynamically resizing SVG `<rect>` tracked via `getTotalLength()` rather than adjusting CSS `border-width` or conic gradients. The SVG overlay approach properly retains full control of the stroke progress using JS `strokeDashoffset`, hugging any border-radius configuration the CSS might push during window scaling, which standard CSS gradients struggle with round corners.
+- Extracted exact corner radius mapping using `getComputedStyle(focusStopBtn).borderRadius` so the Javascript handles scale queries automatically without duplicating CSS logic.
+
+### Next
+- No issues found. Work fully satisfies constraints.
+
+## 2026-03-03 | Session
 
 ### Completed
 - TASK-003: Separated setup wheels from the timer ring
