@@ -4,3 +4,4 @@
 - [x] TASK-003: Separate time wheel picker from the clock circle, create a setup screen view.
 - [x] TASK-004: Move the "hold to stop" option progress to the border of the button.
 - [x] TASK-005: Match the pause button icon with the stop button icon.
+- [x] TASK-006: Update BOOT.md agent rules to accurately describe the Vanilla HTML app.

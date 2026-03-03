@@ -3,7 +3,20 @@
 ## 2026-03-03 | Session
 
 ### Started
-- TASK-005: Match the pause button icon with the stop button icon.
+- TASK-006: Update BOOT.md agent rules to accurately describe the Vanilla HTML app.
+
+### Completed
+- TASK-006: Update BOOT.md agent rules
+  - `BOOT.md`:1-150 — Completely rewrote the base AI agent instructions to remove references to TypeScript, React, Vite, and multiple directories (`/src/components`, `/pages`). Instructs the agent that the project is a single monolithic `index.html` file using Vanilla HTML/CSS/JS.
+  - `BOOT.md`:120-130 — Updated the testing guidelines to emphasize visual verification via the browser subagent rather than traditional unit testing frameworks.
+
+### Decisions (and why)
+- Modified `BOOT.md` rather than following it blindly to prevent future agent sessions from falsely attempting to split the architecture or setup React/Webpack build tools. Documenting the monolithic nature protects the application structure.
+
+### Next
+- No issues found. System guidelines are synchronized with reality.
+
+## 2026-03-03 | Session
 
 ### Completed
 - TASK-005: Matched pause button icon
