@@ -3,7 +3,18 @@
 ## 2026-03-03 | Session
 
 ### Started
-- TASK-004: Move the "hold to stop" option progress to the border of the button.
+- TASK-005: Match the pause button icon with the stop button icon.
+
+### Completed
+- TASK-005: Matched pause button icon
+  - `index.html`:928-932 — Replaced the `⏸` (U+23F8 Double Vertical Bar) with `▮▮` (U+25AE Black Vertical Rectangle twice) inside the `#focusPauseBtn` markup so it perfectly matches the geometrical shape and scale of the stop button `■`.
+  - `index.html`:1252-1260 — Updated `playBtn.innerHTML` state machine so that when the timer pauses/resumes, it uses the geometrical text sequence rather than the emoji character.
+
+### Decisions (and why)
+- Chose `▮▮` text replacements rather than writing inline SVG code because the stop button uses text (`■`) and inherits text color transition stylings perfectly. `▮▮` visually aligns with `■` precisely via the `DM Mono` monospace font configuration while avoiding OS-specific emoji rendering side-effects.
+
+### Next
+- None. Task successfully matched the iconography across buttons.
 
 ### Completed
 - TASK-004: Hold progress on stop button border
