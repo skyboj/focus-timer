@@ -118,6 +118,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding-bottom: 0px;
+    transition: padding-bottom 0.55s cubic-bezier(0.4,0,0.2,1);
   }
 
   /* Ring */
@@ -343,6 +345,7 @@
   .app.focus-mode .scroll-area {
     justify-content: center;
     overflow: hidden;
+    padding-bottom: 120px;
   }
 
   /* Ring expands to fill screen */
@@ -389,8 +392,8 @@
     transition: opacity 0.3s ease, visibility 0s linear 0.3s;
     position: fixed;
     bottom: 0; left: 0; right: 0;
-    padding-bottom: env(safe-area-inset-bottom, 24px);
-    padding-top: 16px;
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 32px);
+    padding-top: 28px;
     z-index: 100;
     flex-direction: row;
     gap: 20px;
