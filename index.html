@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -23,7 +23,62 @@
     --gray2:    #4a6b60;
     --text:     #d4f0e8;
     /* ring shrinks automatically on short screens so content always fits */
-    --ring-size: min(70vw, 310px, max(160px, calc(100svh - 360px)));
+    --ring-size: min(70vw, 310px, max(160px, calc(100svh - 460px)));
+  }
+
+  /* ── LIGHT (BRIGHT) THEME ── */
+  [data-theme="light"] {
+    --bg:       #f0faf5;
+    --bg2:      #dff2e8;
+    --bg3:      #c8e8d8;
+    --mint:     #059669;
+    --mint2:    #047857;
+    --mint-dim: #a7f3d0;
+    --gray:     #3d7264;
+    --gray2:    #71a895;
+    --text:     #0d2b22;
+  }
+
+  /* Background glow */
+  [data-theme="light"] body::after {
+    background: radial-gradient(ellipse at center top, rgba(5,150,105,0.05) 0%, transparent 65%);
+  }
+
+  /* Secondary buttons */
+  [data-theme="light"] .btn-sec {
+    background: rgba(0,0,0,0.05);
+    border-color: rgba(5,150,105,0.25);
+  }
+  [data-theme="light"] .btn-sec:active {
+    background: rgba(5,150,105,0.12);
+    border-color: rgba(5,150,105,0.5);
+  }
+
+  /* Play button glow */
+  [data-theme="light"] .btn-play {
+    box-shadow: 0 0 26px rgba(5,150,105,0.25);
+  }
+
+  /* Wheel highlight in light mode */
+  [data-theme="light"] .wheel-highlight {
+    background: rgba(5,150,105,0.06);
+    border-color: rgba(5,150,105,0.3);
+  }
+
+  /* Focus overlay gradient */
+  [data-theme="light"] .focus-overlay {
+    background: linear-gradient(to top, rgba(240,250,245,0.95) 0%, transparent 100%);
+  }
+
+  /* Focus overlay buttons */
+  [data-theme="light"] .focus-btn {
+    background: rgba(240,250,245,0.75);
+    color: rgba(13,43,34,0.5);
+    border-color: rgba(5,150,105,0.25);
+  }
+  [data-theme="light"] .focus-btn:hover {
+    color: rgba(13,43,34,0.75);
+    border-color: rgba(5,150,105,0.45);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -54,7 +109,7 @@
     flex-direction: column;
     align-items: center;
     height: 100%;
-    padding: 0 18px;
+    padding: 0 24px;
     padding-top: env(safe-area-inset-top, 14px);
     padding-bottom: env(safe-area-inset-bottom, 14px);
   }
@@ -65,23 +120,29 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 0 4px;
+    padding: 14px 0 10px;
     flex-shrink: 0;
     overflow: hidden;
-    max-height: 60px;
-    transition: opacity 0.5s ease, transform 0.5s ease,
-                max-height 0.5s ease, padding 0.5s ease;
+    max-height: 72px;
+    transition: opacity 0.45s ease, transform 0.45s ease,
+                max-height 0.45s ease, padding 0.45s ease;
   }
 
   .app-title {
     font-family: 'DM Mono', monospace;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 300;
     color: var(--mint);
     letter-spacing: 0.08em;
   }
 
-  .mute-btn {
+  .header-btns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .icon-btn {
     width: 34px; height: 34px;
     border-radius: 10px;
     border: 1px solid var(--mint-dim);
@@ -92,21 +153,20 @@
     display: flex; align-items: center; justify-content: center;
     transition: all 0.2s;
   }
-  .mute-btn:active { transform: scale(0.9); }
+  .icon-btn:active { transform: scale(0.9); }
 
   .task-label {
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    color: var(--gray2);
-    text-transform: uppercase;
-    min-height: 14px;
-    margin-bottom: 4px;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--gray);
+    min-height: 18px;
+    margin-bottom: 10px;
     flex-shrink: 0;
     text-align: center;
     overflow: hidden;
-    max-height: 20px;
-    transition: opacity 0.5s ease, transform 0.5s ease,
-                max-height 0.5s ease, margin 0.5s ease;
+    max-height: 26px;
+    transition: opacity 0.45s ease, transform 0.45s ease,
+                max-height 0.45s ease, margin 0.45s ease;
   }
 
   .scroll-area {
@@ -128,7 +188,7 @@
     width: var(--ring-size);
     height: var(--ring-size);
     flex-shrink: 0;
-    margin-top: 2px;
+    margin-top: 12px;
   }
 
   .ring-canvas {
@@ -142,6 +202,10 @@
     transform: translate(-50%, -50%);
     text-align: center;
     pointer-events: none;
+    transition: transform 0.7s cubic-bezier(0.34, 1.3, 0.64, 1);
+  }
+  .app.focus-mode .ring-center {
+    transform: translate(-50%, -50%) scale(1.07);
   }
 
   .time-display {
@@ -185,26 +249,27 @@
 
   /* Controls */
   .controls {
-    margin-top: clamp(10px, 3.5svh, 28px);
+    margin-top: clamp(16px, 4.5svh, 32px);
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 20px;
     flex-shrink: 0;
+    transition: opacity 0.22s ease, transform 0.22s ease;
   }
 
   .btn-sec {
-    width: 50px; height: 50px;
-    border-radius: 14px;
-    border: 1px solid rgba(77,255,195,0.18);
-    background: #cde8e0;
-    color: #0b4d3a;
+    width: 52px; height: 52px;
+    border-radius: 16px;
+    border: 1px solid rgba(77,255,195,0.2);
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
     font-size: 18px;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: all 0.18s;
-    font-weight: 600;
+    font-weight: 500;
   }
-  .btn-sec:active { transform: scale(0.9); background: #b2d8ce; }
+  .btn-sec:active { transform: scale(0.9); background: rgba(77,255,195,0.12); border-color: rgba(77,255,195,0.4); }
 
   /* Breathing animation */
   @keyframes breathe {
@@ -233,12 +298,13 @@
 
   /* Voice log */
   .voice-log {
-    margin-top: clamp(3px, 1svh, 8px);
-    min-height: clamp(16px, 2.5svh, 26px);
+    margin-top: clamp(8px, 2svh, 14px);
+    min-height: clamp(20px, 3svh, 28px);
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
     width: 100%;
     padding: 0 8px;
+    transition: opacity 0.22s ease 0.04s, transform 0.22s ease 0.04s;
   }
   .voice-msg {
     font-size: 11px;
@@ -252,78 +318,85 @@
   }
   .voice-msg.show { opacity: 0.7; }
 
-  /* Presets */
-  .presets-section {
-    margin-top: clamp(5px, 1.5svh, 12px);
+  /* ── iOS WHEEL PICKER ── */
+  .wheel-section {
+    margin-top: clamp(10px, 2.5svh, 20px);
     width: 100%;
     flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.22s ease 0.08s, transform 0.22s ease 0.08s;
   }
 
-  .section-title {
-    font-size: 9px;
-    letter-spacing: 0.13em;
-    color: var(--gray2);
-    text-transform: uppercase;
-    text-align: center;
-    margin-bottom: 9px;
-    font-family: 'DM Mono', monospace;
-  }
-
-  .presets-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 7px;
-  }
-
-  .preset {
-    background: #cde8e0;
-    border: 1px solid rgba(77,255,195,0.25);
-    border-radius: 12px;
-    padding: 9px 4px;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.18s;
-  }
-  .preset:active { transform: scale(0.94); background: #b2d8ce; }
-  .preset.active { border-color: var(--mint); background: #b8edd9; }
-
-  .preset-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 18px;
-    color: #0b4d3a;
-    line-height: 1;
-  }
-  .preset-lbl {
-    font-size: 9px;
-    color: #3a7060;
-    margin-top: 3px;
-    letter-spacing: 0.04em;
-  }
-
-  .custom-row {
-    margin-top: 7px;
+  .wheel-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: var(--bg2);
-    border: 1px solid var(--mint-dim);
-    border-radius: 12px;
-    padding: 9px 14px;
+    gap: 14px;
   }
-  .custom-lbl { font-size: 10px; color: var(--gray2); flex: 1; letter-spacing: 0.04em; }
-  .custom-input {
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--mint-dim);
-    color: var(--mint);
+
+  .wheel-container {
+    position: relative;
+    height: 220px; /* VISIBLE(5) × ITEM_H(44) */
+    width: 100px;
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+  .wheel-container:active { cursor: grabbing; }
+
+  .wheel-drum {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    will-change: transform;
+  }
+
+  .wheel-item {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-family: 'DM Mono', monospace;
-    font-size: 17px;
-    width: 36px;
-    text-align: center;
-    outline: none;
-    padding: 2px;
+    font-size: 30px;
+    font-weight: 300;
+    color: var(--text);
+    user-select: none;
+    -webkit-user-select: none;
   }
-  .custom-sep { color: var(--gray2); font-size: 10px; letter-spacing: 0.04em; }
+
+  .wheel-highlight {
+    position: absolute;
+    top: 88px; /* CENTER_OFF = (VISIBLE-1)/2 × ITEM_H */
+    left: -6px; right: -6px;
+    height: 44px;
+    background: rgba(77,255,195,0.05);
+    border-top: 1px solid var(--mint-dim);
+    border-bottom: 1px solid var(--mint-dim);
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .wheel-fade {
+    position: absolute;
+    left: 0; right: 0;
+    height: 88px; /* 2 × ITEM_H */
+    pointer-events: none;
+    z-index: 2;
+  }
+  .wheel-fade-top    { top: 0;    background: linear-gradient(to bottom, var(--bg) 10%, transparent 100%); }
+  .wheel-fade-bottom { bottom: 0; background: linear-gradient(to top,    var(--bg) 10%, transparent 100%); }
+
+  .wheel-unit {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--gray2);
+    letter-spacing: 0.08em;
+    margin-bottom: 2px;
+  }
 
   /* Done bounce */
   @keyframes done-bounce { 0%,100%{transform:scale(1)} 40%{transform:scale(1.04)} }
@@ -350,9 +423,9 @@
 
   /* Ring expands to fill screen */
   .ring-wrap {
-    transition: width 0.6s cubic-bezier(0.4,0,0.2,1),
-                height 0.6s cubic-bezier(0.4,0,0.2,1),
-                margin 0.6s ease;
+    transition: width 0.72s cubic-bezier(0.34, 1.3, 0.64, 1),
+                height 0.72s cubic-bezier(0.34, 1.3, 0.64, 1),
+                margin 0.65s ease;
   }
   .app.focus-mode .ring-wrap {
     /* Stay in normal flow — no position:fixed so there is no jump.
@@ -370,16 +443,29 @@
     align-items: center;
     flex-shrink: 0;
     overflow: hidden;
-    max-height: 400px;
-    transition: max-height 0.55s cubic-bezier(0.4,0,0.2,1),
-                opacity 0.3s ease,
-                transform 0.4s ease;
+    max-height: 480px;
+    transition: max-height 0.6s cubic-bezier(0.4,0,0.2,1);
   }
   .app.focus-mode .bottom-section {
     max-height: 0;
-    opacity: 0;
     pointer-events: none;
+  }
+
+  /* Staggered exit: controls → voice-log → presets */
+  .app.focus-mode .controls {
+    opacity: 0;
     transform: translateY(10px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+  }
+  .app.focus-mode .voice-log {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.22s ease 0.04s, transform 0.22s ease 0.04s;
+  }
+  .app.focus-mode .wheel-section {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.22s ease 0.08s, transform 0.22s ease 0.08s;
   }
 
   /* Focus overlay buttons */
@@ -388,8 +474,9 @@
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
+    transform: translateY(20px);
     /* when hiding: fade out first, then remove from hit-testing */
-    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+    transition: opacity 0.28s ease, visibility 0s linear 0.28s, transform 0.28s ease;
     position: fixed;
     bottom: 0; left: 0; right: 0;
     padding-bottom: max(env(safe-area-inset-bottom, 0px), 32px);
@@ -399,15 +486,17 @@
     gap: 20px;
     justify-content: center;
     align-items: flex-end;
-    background: linear-gradient(to top, rgba(13,26,22,0.85) 0%, transparent 100%);
+    background: linear-gradient(to top, rgba(13,26,22,0.9) 0%, transparent 100%);
   }
   /* focus-overlay is a sibling of .app, not a child — use ~ combinator */
   .app.focus-mode ~ .focus-overlay {
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
-    /* when showing: make visible immediately, then fade in after ring starts growing */
-    transition: opacity 0.3s ease 0.5s, visibility 0s linear 0.5s;
+    transform: translateY(0);
+    /* slide up after ring expansion is well underway */
+    transition: opacity 0.4s ease 0.58s, visibility 0s linear 0.58s,
+                transform 0.5s cubic-bezier(0.34, 1.3, 0.64, 1) 0.58s;
   }
 
   .focus-btn {
@@ -487,10 +576,7 @@
   @media (max-height: 650px) and (orientation: portrait) {
     .btn-play { width: 62px; height: 62px; font-size: 22px; }
     .btn-sec  { width: 44px; height: 44px; font-size: 16px; }
-    .preset   { padding: 6px 4px; }
-    .preset-num { font-size: 15px; }
-    .section-title { margin-bottom: 5px; }
-    .custom-row { padding: 6px 14px; margin-top: 5px; }
+    .wheel-item { font-size: 24px; }
     .focus-btn { height: clamp(54px, 8svh, 72px); }
   }
 
@@ -519,12 +605,8 @@
     .btn-play { width: 56px; height: 56px; font-size: 20px; }
     .btn-sec  { width: 42px; height: 42px; font-size: 15px; }
 
-    .presets-section { margin-top: 6px; }
-    .preset  { padding: 5px 4px; }
-    .preset-num { font-size: 14px; }
-    .preset-lbl { font-size: 8px; margin-top: 2px; }
-    .section-title { margin-bottom: 4px; }
-    .custom-row { padding: 5px 10px; margin-top: 4px; }
+    .wheel-section { margin-top: 4px; }
+    .wheel-item { font-size: 22px; }
 
     .focus-btn { height: 56px; border-radius: 16px; }
   }
@@ -535,10 +617,13 @@
 <div class="app">
   <div class="header">
     <span class="app-title">focus.</span>
-    <button class="mute-btn" id="muteBtn" onclick="toggleMute()">🔊</button>
+    <div class="header-btns">
+      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()">☀️</button>
+      <button class="icon-btn" id="muteBtn"  onclick="toggleMute()">🔊</button>
+    </div>
   </div>
 
-  <div class="task-label" id="taskLabel">choose a time and start</div>
+  <div class="task-label" id="taskLabel">5 min</div>
 
   <div class="scroll-area">
     <div class="ring-wrap" id="ringWrap">
@@ -561,27 +646,15 @@
         <div class="voice-msg" id="voiceMsg"></div>
       </div>
 
-      <div class="presets-section">
-        <div class="section-title">quick start</div>
-        <div class="presets-grid">
-          <button class="preset active" onclick="setPreset(5,'warmup',this)">
-            <div class="preset-num">5</div><div class="preset-lbl">warmup</div>
-          </button>
-          <button class="preset" onclick="setPreset(15,'start',this)">
-            <div class="preset-num">15</div><div class="preset-lbl">start</div>
-          </button>
-          <button class="preset" onclick="setPreset(25,'focus',this)">
-            <div class="preset-num">25</div><div class="preset-lbl">focus</div>
-          </button>
-          <button class="preset" onclick="setPreset(45,'flow',this)">
-            <div class="preset-num">45</div><div class="preset-lbl">flow</div>
-          </button>
-        </div>
-        <div class="custom-row">
-          <span class="custom-lbl">custom time</span>
-          <input class="custom-input" type="number" id="customMin" min="1" max="99" value="5"
-                 onchange="setCustomTime()" oninput="setCustomTime()">
-          <span class="custom-sep">min</span>
+      <div class="wheel-section" id="wheelSection">
+        <div class="wheel-row">
+          <div class="wheel-container" id="minuteWheelEl">
+            <div class="wheel-drum" id="minuteDrum"></div>
+            <div class="wheel-highlight"></div>
+            <div class="wheel-fade wheel-fade-top"></div>
+            <div class="wheel-fade wheel-fade-bottom"></div>
+          </div>
+          <span class="wheel-unit">min</span>
         </div>
       </div>
     </div>
@@ -612,8 +685,9 @@ let totalSeconds     = 5 * 60;
 let remainingSeconds = 5 * 60;
 let isRunning        = false;
 let isMuted          = false;
+let isLight          = false;
 let interval         = null;
-let currentPreset    = 'warmup';
+let currentPreset    = '5 min';
 let lastSpeakTime    = 0;
 let lastFiveMinAnn   = 0;
 let hasHalf = false, has5 = false, has2 = false, has1 = false;
@@ -658,7 +732,7 @@ function syncCanvasDuringTransition(duration) {
 
 function enterFocusMode() {
   appEl.classList.add('focus-mode');
-  syncCanvasDuringTransition(700); // 700ms covers the 600ms CSS transition
+  syncCanvasDuringTransition(820); // 820ms covers the 720ms CSS transition
 }
 
 function exitFocusMode() {
@@ -788,8 +862,8 @@ function drawRingFrame(progress, color, showProgress) {
   ctx.clearRect(0, 0, W, W);
 
   // Background track
-  drawWavyArc(cx, cy, r, amp * 0.45, waves, start, full,
-    'rgba(77,255,195,0.07)', lw, false);
+  const trackColor = isLight ? 'rgba(5,150,105,0.09)' : 'rgba(77,255,195,0.07)';
+  drawWavyArc(cx, cy, r, amp * 0.45, waves, start, full, trackColor, lw, false);
 
   if (!showProgress || progress <= 0) return;
 
@@ -807,7 +881,7 @@ function drawRingFrame(progress, color, showProgress) {
     ctx.save();
     ctx.beginPath();
     ctx.arc(mx, my, lw * 0.5, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,255,255,0.22)';
+    ctx.fillStyle = isLight ? 'rgba(0,50,30,0.18)' : 'rgba(255,255,255,0.22)';
     ctx.fill();
     ctx.restore();
   }
@@ -867,6 +941,20 @@ function toggleMute() {
   if (isMuted) window.speechSynthesis.cancel();
 }
 
+// ── Theme ─────────────────────────────────────
+function toggleTheme() {
+  isLight = !isLight;
+  applyTheme();
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+}
+
+function applyTheme() {
+  document.documentElement.dataset.theme = isLight ? 'light' : 'dark';
+  document.getElementById('themeBtn').textContent = isLight ? '🌙' : '☀️';
+  document.querySelector('meta[name="theme-color"]').content = isLight ? '#f0faf5' : '#0d1a16';
+  if (!blinkTick) refreshRing();
+}
+
 // ── Vibration ─────────────────────────────────
 function vibrate(pattern) {
   try { if (navigator.vibrate) navigator.vibrate(pattern); } catch(e) {}
@@ -887,8 +975,8 @@ function toggleTimer() {
     interval = setInterval(tick, 1000);
     enterFocusMode();
     // Start breathing after the focus transition finishes so both
-    // animations don't compete during the 600ms grow.
-    setTimeout(() => ringWrap.classList.add('breathing'), 650);
+    // animations don't compete during the 720ms grow.
+    setTimeout(() => ringWrap.classList.add('breathing'), 740);
   } else {
     pauseTimer();
   }
@@ -920,7 +1008,7 @@ function resetTimer() {
   playBtn.innerHTML = '▶';
   playBtn.classList.remove('paused');
   timeLabel.textContent = 'ready';
-  taskLabel.textContent = 'choose a time and start';
+  taskLabel.textContent = currentPreset;
   ringWrap.classList.remove('done');
   ringWrap.classList.remove('breathing');
   voicePill.classList.remove('speaking');
@@ -1001,17 +1089,54 @@ function addMinute() {
   if (isRunning) { vibrate([40]); speak('One minute added.'); }
 }
 
-// ── Presets ───────────────────────────────────
-function setPreset(mins, name, btn) {
+// ── iOS Wheel Picker ──────────────────────────
+const ITEM_H     = 44;
+const VISIBLE    = 5;
+const CENTER_OFF = (VISIBLE - 1) / 2 * ITEM_H; // 88
+const MIN_MIN    = 1;
+const MAX_MIN    = 90;
+
+let wheelOffset   = CENTER_OFF - 4 * ITEM_H; // -88 → centers 5 min (index 4)
+let wheelRAF      = null;
+let lastTickIndex = -1;
+let dragStartY    = null;
+let dragStartOff  = null;
+let dragLastY     = null;
+let dragLastT     = null;
+let dragVel       = 0;
+
+function clampOff(off) {
+  return Math.max(CENTER_OFF - (MAX_MIN - 1) * ITEM_H, Math.min(CENTER_OFF, off));
+}
+function off2idx(off) { return Math.round((CENTER_OFF - off) / ITEM_H); }
+function idx2off(i)   { return CENTER_OFF - i * ITEM_H; }
+
+function renderWheel() {
+  const drum = document.getElementById('minuteDrum');
+  if (!drum) return;
+  drum.style.transform = `translateY(${wheelOffset}px)`;
+  const center = (CENTER_OFF - wheelOffset) / ITEM_H;
+  drum.querySelectorAll('.wheel-item').forEach((el, i) => {
+    const d = Math.abs(i - center);
+    el.style.opacity   = Math.max(0.15, 1 - d * 0.38);
+    el.style.transform = `scaleY(${Math.max(0.76, 1 - d * 0.08)})`;
+  });
+  const idx = off2idx(wheelOffset);
+  if (idx !== lastTickIndex && idx >= 0 && idx < MAX_MIN) {
+    lastTickIndex = idx;
+    vibrate([3]);
+  }
+}
+
+function applyWheelValue() {
   if (isRunning) return;
+  const idx  = Math.max(0, Math.min(MAX_MIN - 1, off2idx(wheelOffset)));
+  const mins = idx + MIN_MIN;
   totalSeconds = remainingSeconds = mins * 60;
-  currentPreset = name;
+  currentPreset = `${mins} min`;
   resetFlags();
-  document.querySelectorAll('.preset').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('customMin').value = mins;
   timeLabel.textContent = 'ready';
-  taskLabel.textContent = `${mins} min · ${name}`;
+  taskLabel.textContent = `${mins} min`;
   ringWrap.classList.remove('done');
   timeDisplay.style.color = '';
   updateClock();
@@ -1020,22 +1145,89 @@ function setPreset(mins, name, btn) {
   refreshRing();
 }
 
-function setCustomTime() {
-  if (isRunning) return;
-  const mins = parseInt(document.getElementById('customMin').value) || 5;
-  if (mins < 1) return;
-  totalSeconds = remainingSeconds = mins * 60;
-  currentPreset = `${mins} min`;
-  resetFlags();
-  document.querySelectorAll('.preset').forEach(b => b.classList.remove('active'));
-  timeLabel.textContent = 'ready';
-  taskLabel.textContent = `custom · ${mins} min`;
-  ringWrap.classList.remove('done');
-  timeDisplay.style.color = '';
-  updateClock();
-  stopBlink();
-  initCanvas();
-  refreshRing();
+function snapToIdx(idx) {
+  idx = Math.max(0, Math.min(MAX_MIN - 1, idx));
+  const target = idx2off(idx);
+  const start  = wheelOffset;
+  const dist   = target - start;
+  const dur    = Math.min(300, Math.max(80, Math.abs(dist) * 1.2));
+  const t0     = performance.now();
+  if (wheelRAF) cancelAnimationFrame(wheelRAF);
+  function frame(now) {
+    const t    = Math.min((now - t0) / dur, 1);
+    const ease = 1 - Math.pow(1 - t, 3); // cubic-out
+    wheelOffset = start + dist * ease;
+    renderWheel();
+    if (t < 1) { wheelRAF = requestAnimationFrame(frame); }
+    else        { wheelOffset = target; renderWheel(); applyWheelValue(); }
+  }
+  wheelRAF = requestAnimationFrame(frame);
+}
+
+function wheelPointerDown(e) {
+  if (wheelRAF) { cancelAnimationFrame(wheelRAF); wheelRAF = null; }
+  if (!e.touches) e.preventDefault();
+  const y      = e.touches ? e.touches[0].clientY : e.clientY;
+  dragStartY   = y; dragStartOff = wheelOffset;
+  dragLastY    = y; dragLastT    = performance.now();
+  dragVel      = 0;
+}
+
+function wheelPointerMove(e) {
+  if (dragStartY === null) return;
+  e.preventDefault();
+  const y   = e.touches ? e.touches[0].clientY : e.clientY;
+  const now = performance.now();
+  const dt  = now - dragLastT;
+  if (dt > 0) dragVel = (y - dragLastY) / dt * 16; // px per 16ms frame
+  dragLastY = y; dragLastT = now;
+  wheelOffset = clampOff(dragStartOff + (y - dragStartY));
+  renderWheel();
+}
+
+function wheelPointerUp() {
+  if (dragStartY === null) return;
+  dragStartY = null;
+  let v = dragVel;
+  if (wheelRAF) cancelAnimationFrame(wheelRAF);
+  function decel() {
+    v *= 0.90;
+    wheelOffset = clampOff(wheelOffset + v);
+    renderWheel();
+    if (Math.abs(v) < 0.3) { snapToIdx(off2idx(wheelOffset)); }
+    else                    { wheelRAF = requestAnimationFrame(decel); }
+  }
+  wheelRAF = requestAnimationFrame(decel);
+}
+
+function buildWheel() {
+  const drum = document.getElementById('minuteDrum');
+  if (!drum) return;
+  for (let v = MIN_MIN; v <= MAX_MIN; v++) {
+    const el = document.createElement('div');
+    el.className = 'wheel-item';
+    el.textContent = v;
+    drum.appendChild(el);
+  }
+  // Set lastTickIndex to initial position to avoid spurious haptic on load
+  lastTickIndex = off2idx(wheelOffset);
+  renderWheel();
+  applyWheelValue();
+
+  const container = document.getElementById('minuteWheelEl');
+  container.addEventListener('touchstart',  wheelPointerDown, { passive: true });
+  container.addEventListener('touchmove',   wheelPointerMove, { passive: false });
+  container.addEventListener('touchend',    wheelPointerUp);
+  container.addEventListener('touchcancel', wheelPointerUp);
+  container.addEventListener('mousedown',   wheelPointerDown);
+  window.addEventListener('mousemove', wheelPointerMove);
+  window.addEventListener('mouseup',   wheelPointerUp);
+  container.addEventListener('wheel', e => {
+    e.preventDefault();
+    if (wheelRAF) { cancelAnimationFrame(wheelRAF); wheelRAF = null; }
+    const delta = e.deltaY > 0 ? -1 : 1;
+    snapToIdx(off2idx(wheelOffset) - delta);
+  }, { passive: false });
 }
 
 function resetFlags() {
@@ -1085,10 +1277,15 @@ document.addEventListener('touchstart', function u() {
 }, { once: true });
 
 // ── Init ──────────────────────────────────────
+(function initTheme() {
+  const saved = localStorage.getItem('theme');
+  isLight = saved ? saved === 'light' : window.matchMedia('(prefers-color-scheme: light)').matches;
+  applyTheme();
+})();
+
 requestAnimationFrame(() => {
   initCanvas();
-  refreshRing();
-  updateClock();
+  buildWheel(); // sets initial time from wheel, calls refreshRing + updateClock
 });
 window.addEventListener('resize', () => { initCanvas(); if (!blinkTick) refreshRing(); });
 </script>
