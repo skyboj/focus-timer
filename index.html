@@ -642,16 +642,29 @@ let holdStart = null;
 let holdRAF   = null;
 
 // ── Focus mode ────────────────────────────────
+
+// Continuously resize canvas every rAF frame for `duration` ms so the
+// ring drawing always matches the CSS-transitioning ring-wrap size.
+// This eliminates the one-shot canvas "pop" that the old setTimeout caused.
+function syncCanvasDuringTransition(duration) {
+  const end = performance.now() + duration;
+  function frame(now) {
+    initCanvas();
+    refreshRing();
+    if (now < end) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
 function enterFocusMode() {
   appEl.classList.add('focus-mode');
-  // Resize canvas after transition
-  setTimeout(() => { initCanvas(); refreshRing(); }, 650);
+  syncCanvasDuringTransition(700); // 700ms covers the 600ms CSS transition
 }
 
 function exitFocusMode() {
   appEl.classList.remove('focus-mode');
   cancelHold();
-  setTimeout(() => { initCanvas(); refreshRing(); }, 650);
+  syncCanvasDuringTransition(700);
 }
 
 function pauseFromFocus() {
@@ -868,12 +881,14 @@ function toggleTimer() {
     playBtn.classList.remove('paused');
     timeLabel.textContent = currentPreset;
     taskLabel.textContent = 'stay focused';
-    ringWrap.classList.add('breathing');
     vibrate([80, 50, 80]);
     speak(`Timer started. ${fmtMins(Math.ceil(remainingSeconds / 60))}.`);
     requestWakeLock();
     interval = setInterval(tick, 1000);
     enterFocusMode();
+    // Start breathing after the focus transition finishes so both
+    // animations don't compete during the 600ms grow.
+    setTimeout(() => ringWrap.classList.add('breathing'), 650);
   } else {
     pauseTimer();
   }
