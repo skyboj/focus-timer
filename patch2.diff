@@ -1,0 +1,224 @@
+diff --git a/TASKS.md b/TASKS.md
+index c802436..bb54d5a 100644
+--- a/TASKS.md
++++ b/TASKS.md
+@@ -1,3 +1,4 @@
+ ## High priority
+ - [x] TASK-001: Expand timer limit to 10 hours, add hours/minutes setting, and make circle shape changing smooth
+ - [x] TASK-002: Move time picker inside the timer circle, add seconds, allow independent scrolling for hours/minutes/seconds
++- [ ] TASK-003: Separate time wheel picker from the clock circle, create a setup screen view.
+diff --git a/index.html b/index.html
+index 562c974..6482185 100644
+--- a/index.html
++++ b/index.html
+@@ -546,11 +546,10 @@
+     }
+ 
+     .app.focus-mode .ring-wrap {
+-      /* Stay in normal flow — no position:fixed so there is no jump.
+-       Flexbox + max-height animations smoothly drift the ring to center. */
+       width: min(calc(100vw - 36px), calc(100svh - 180px));
+       height: min(calc(100vw - 36px), calc(100svh - 180px));
+       margin: 0;
++      position: relative;
+     }
+ 
+     /* Bottom section collapses smoothly */
+@@ -718,10 +717,10 @@
+     @media (max-height: 650px) and (orientation: portrait) {
+       .btn-play { width: 62px; height: 62px; font-size: 22px; }
+       .btn-sec  { width: 44px; height: 44px; font-size: 16px; }
+-      .wheel-item { font-size: 22px; height: 40px; }
+-      .wheel-container { height: 120px; width: 54px; }
+-      .wheel-highlight { height: 40px; top: 40px; }
+-      .wheel-fade { height: 40px; }
++      .wheel-item { font-size: 26px; height: 40px; }
++      .wheel-container { height: 200px; width: 60px; }
++      .wheel-highlight { height: 40px; top: 80px; }
++      .wheel-fade { height: 80px; }
+       .focus-btn { height: clamp(54px, 8svh, 72px); }
+     }
+ 
+@@ -773,10 +772,10 @@
+         font-size: 15px;
+       }
+ 
+-      .wheel-item { font-size: 20px; height: 36px; }
+-      .wheel-container { height: 108px; width: 48px; }
+-      .wheel-highlight { height: 36px; top: 36px; }
+-      .wheel-fade { height: 36px; }
++      .wheel-item { font-size: 24px; height: 36px; }
++      .wheel-container { height: 180px; width: 50px; }
++      .wheel-highlight { height: 36px; top: 72px; }
++      .wheel-fade { height: 72px; }
+ 
+       .focus-btn {
+         height: 56px;
+@@ -802,48 +801,50 @@
+     <div class="scroll-area">
+       <div class="ring-wrap" id="ringWrap">
+         <canvas class="ring-canvas" id="ringCanvas"></canvas>
+-        <div class="ring-center setting" id="ringCenter">
++        <div class="ring-center">
+           <div class="time-display" id="timeDisplay">05:00</div>
+-          
+-          <div class="wheel-row">
+-            <div class="wheel-col">
+-              <div class="wheel-container" id="hourWheelEl">
+-                <div class="wheel-drum" id="hourDrum"></div>
+-                <div class="wheel-highlight"></div>
+-                <div class="wheel-fade wheel-fade-top"></div>
+-                <div class="wheel-fade wheel-fade-bottom"></div>
+-              </div>
+-              <span class="wheel-unit">hr</span>
++          <div class="time-label" id="timeLabel">ready</div>
++        </div>
++        <div class="voice-pill" id="voicePill">voice</div>
++      </div>
++
++      <!-- The setup view -->
++      <div class="setup-section" id="setupSection">
++        <div class="wheel-row">
++          <div class="wheel-col">
++            <div class="wheel-container" id="hourWheelEl">
++              <div class="wheel-drum" id="hourDrum"></div>
++              <div class="wheel-highlight"></div>
++              <div class="wheel-fade wheel-fade-top"></div>
++              <div class="wheel-fade wheel-fade-bottom"></div>
+             </div>
++            <span class="wheel-unit">hr</span>
++          </div>
+ 
+-            <span style="font-size:24px; font-weight:300; margin-top:-18px; opacity: 0.3;">:</span>
++          <span style="font-size:32px; font-weight:300; margin-top:-18px; opacity: 0.3;">:</span>
+ 
+-            <div class="wheel-col">
+-              <div class="wheel-container" id="minuteWheelEl">
+-                <div class="wheel-drum" id="minuteDrum"></div>
+-                <div class="wheel-highlight"></div>
+-                <div class="wheel-fade wheel-fade-top"></div>
+-                <div class="wheel-fade wheel-fade-bottom"></div>
+-              </div>
+-              <span class="wheel-unit">min</span>
++          <div class="wheel-col">
++            <div class="wheel-container" id="minuteWheelEl">
++              <div class="wheel-drum" id="minuteDrum"></div>
++              <div class="wheel-highlight"></div>
++              <div class="wheel-fade wheel-fade-top"></div>
++              <div class="wheel-fade wheel-fade-bottom"></div>
+             </div>
++            <span class="wheel-unit">min</span>
++          </div>
+ 
+-            <span style="font-size:24px; font-weight:300; margin-top:-18px; opacity: 0.3;">:</span>
++          <span style="font-size:32px; font-weight:300; margin-top:-18px; opacity: 0.3;">:</span>
+ 
+-            <div class="wheel-col">
+-              <div class="wheel-container" id="secondWheelEl">
+-                <div class="wheel-drum" id="secondDrum"></div>
+-                <div class="wheel-highlight"></div>
+-                <div class="wheel-fade wheel-fade-top"></div>
+-                <div class="wheel-fade wheel-fade-bottom"></div>
+-              </div>
+-              <span class="wheel-unit">sec</span>
++          <div class="wheel-col">
++            <div class="wheel-container" id="secondWheelEl">
++              <div class="wheel-drum" id="secondDrum"></div>
++              <div class="wheel-highlight"></div>
++              <div class="wheel-fade wheel-fade-top"></div>
++              <div class="wheel-fade wheel-fade-bottom"></div>
+             </div>
++            <span class="wheel-unit">sec</span>
+           </div>
+-
+-          <div class="time-label" id="timeLabel">ready</div>
+         </div>
+-        <div class="voice-pill" id="voicePill">voice</div>
+       </div>
+ 
+       <div class="bottom-section">
+@@ -1302,7 +1303,8 @@
+ 
+     const wheels = {
+       h: { id: 'h', el: null, drum: null, min: 0, max: 10, offset: 0, raf: null, lastIdx: -1 },
+-      m: { id: 'm', el: null, drum: null, min: 0, max: 59, offset: 0, raf: null, lastIdx: -1 }
++      m: { id: 'm', el: null, drum: null, min: 0, max: 59, offset: 0, raf: null, lastIdx: -1 },
++      s: { id: 's', el: null, drum: null, min: 0, max: 59, offset: 0, raf: null, lastIdx: -1 }
+     };
+ 
+     let activeWheel = null;
+@@ -1319,9 +1321,11 @@
+     function getWheelFloatSecs() {
+       const hId = (CENTER_OFF - wheels.h.offset) / ITEM_H;
+       const mId = (CENTER_OFF - wheels.m.offset) / ITEM_H;
++      const sId = (CENTER_OFF - wheels.s.offset) / ITEM_H;
+       const h = wheels.h.min + hId;
+       const m = wheels.m.min + mId;
+-      return Math.max(60, (h * 60 + m) * 60); // min 1 min 0 sec
++      const s = wheels.s.min + sId;
++      return Math.max(60, (h * 60 + m) * 60 + s); // min 1 min 0 sec
+     }
+ 
+     function renderWheel(id) {
+@@ -1352,17 +1356,22 @@
+       if (isRunning) return;
+       const hIdx = Math.max(0, Math.min(wheels.h.max - wheels.h.min, off2idx(wheels.h.offset)));
+       const mIdx = Math.max(0, Math.min(wheels.m.max - wheels.m.min, off2idx(wheels.m.offset)));
++      const sIdx = Math.max(0, Math.min(wheels.s.max - wheels.s.min, off2idx(wheels.s.offset)));
+       let hrs = wheels.h.min + hIdx;
+       let mins = wheels.m.min + mIdx;
++      let secs = wheels.s.min + sIdx;
+ 
+-      if (hrs === 0 && mins === 0) {
+-        mins = 1;
+-        wheels.m.offset = idx2off(mins - wheels.m.min);
+-        renderWheel('m');
++      // if (hrs === 0 && mins === 0 && secs === 0) { ... we allow 0 now potentially, or cap at 1 sec }
++      if (hrs === 0 && mins === 0 && secs === 0) {
++        secs = 1;
++        wheels.s.offset = idx2off(secs - wheels.s.min);
++        renderWheel('s');
+       }
+ 
+-      totalSeconds = remainingSeconds = (hrs * 60 + mins) * 60;
+-      currentPreset = hrs > 0 ? (mins > 0 ? `${hrs}h ${mins}m` : `${hrs}h`) : `${mins} min`;
++      totalSeconds = remainingSeconds = (hrs * 60 + mins) * 60 + secs;
++      if (hrs > 0) currentPreset = mins > 0 ? `${hrs}h ${mins}m` : `${hrs}h`;
++      else if (mins > 0) currentPreset = secs > 0 ? `${mins}m ${secs}s` : `${mins} min`;
++      else currentPreset = `${secs} sec`;
+       resetFlags();
+       timeLabel.textContent = 'ready';
+       taskLabel.textContent = currentPreset;
+@@ -1458,17 +1467,31 @@
+         }
+       }
+ 
++      // Init Sec Wheel
++      wheels.s.el = document.getElementById('secondWheelEl');
++      wheels.s.drum = document.getElementById('secondDrum');
++      if (wheels.s.drum) {
++        for (let v = wheels.s.min; v <= wheels.s.max; v++) {
++          const el = document.createElement('div');
++          el.className = 'wheel-item'; el.textContent = v;
++          wheels.s.drum.appendChild(el);
++        }
++      }
++
+       // Set default (5 min)
+       wheels.h.offset = idx2off(0); // 0 hours
+       wheels.m.offset = idx2off(5 - wheels.m.min); // 5 mins
++      wheels.s.offset = idx2off(0); // 0 secs
+       wheels.h.lastIdx = off2idx(wheels.h.offset);
+       wheels.m.lastIdx = off2idx(wheels.m.offset);
++      wheels.s.lastIdx = off2idx(wheels.s.offset);
+       renderWheel('h');
+       renderWheel('m');
++      renderWheel('s');
+       applyWheelValue();
+ 
+       // Bind Events
+-      ['h', 'm'].forEach(id => {
++      ['h', 'm', 's'].forEach(id => {
+         const wc = wheels[id].el;
+         if (!wc) return;
+         wc.addEventListener('touchstart', e => wheelPointerDown(e, id), { passive: true });

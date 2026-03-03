@@ -3,19 +3,18 @@
 ## 2026-03-03 | Session
 
 ### Started
-- TASK-002: Move time picker inside the timer circle, add seconds, allow independent scrolling for hours/minutes/seconds
+- TASK-003: Separate time wheel picker from the clock circle, create a setup screen view.
 
 ### Completed
-- TASK-002: In-circle independent time pickers (HR/MIN/SEC)
-  - `index.html`:222-243 — Updated `.ring-center` to act as a flex container and toggles visibility via `.setting` and `.running` classes.
-  - `index.html`:402-498 — Updated `.wheel-container` CSS to be narrower (`64px` width, `150px` height) to fit 3 wheels natively inside the circle radius.
-  - `index.html`:825-835 — Moved wheels markup inside `<div class="ring-center setting" id="ringCenter">` and created a third wheel for seconds (`#secondWheelEl`).
-  - `index.html`:1173-1226 — Updated JavaScript `toggleTimer()`, `resetTimer()`, and `timerDone()` to toggle `.setting` and `.running` classes on `ringCenter`, handling the UI swap between wheels and the static countdown text.
-  - `index.html`:1301-1492 — Added `wheels.s` configuration object and updated the math inside `getWheelFloatSecs()`, `applyWheelValue()`, and `updateClock()` to parse HR/MIN/SEC appropriately.
+- TASK-003: Separated setup wheels from the timer ring
+  - `index.html`:moved `.wheel-row` out of `.ring-center` and wrapped it in a new `.setup-section`.
+  - `index.html`:updated the `.ring-wrap` opacity to default to `0` and `visibility: hidden;` initially.
+  - `index.html`:updated `.setup-section` height and layout to be the primary view when standing by.
+  - `index.html`:modified `toggleTimer()` and `resetTimer()` to toggle the `.running` class directly on `appEl` so the CSS transitions smoothly handle fading in the timer ring and fading out the wheels.
 
 ### Decisions (and why)
-- Chose to manage wheel vs static text visibility via CSS classes (`.setting` / `.running`) toggled on the parent `#ringCenter` rather than dynamically tearing down/building DOM nodes to match the iOS-style "flip" behavior gracefully without losing wheel state/scroll offset.
-- Maintained independent mathematical offsets for each wheel but unified their calculation into total seconds when rendering the ring progress shape, fulfilling the "Hours don't affect to minutes and seconds" requirement.
+- Used `.app.running` CSS rules with `opacity` and `visibility: hidden` delays rather than purely `display: none`. This allows the wheels to glide smoothly downward and fade out while the timer fades in, avoiding an abrupt clipping jump from inline layout reflows.
+- `visibility: hidden` and `pointer-events: none` were required on top of `opacity: 0` so the wheels don't accidentally intercept touchscreen drags while the clock is ticking overtop of them.
 
 ### Next
-- No issues found. Work fully satisfies constraints.
+- No issues found. Both clock and wheels behave perfectly on toggle.
