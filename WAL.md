@@ -3,18 +3,19 @@
 ## 2026-03-03 | Session
 
 ### Started
-- TASK-001: Expand timer limit to 10 hours, add hours/minutes setting, and make circle shape changing smooth
+- TASK-002: Move time picker inside the timer circle, add seconds, allow independent scrolling for hours/minutes/seconds
 
 ### Completed
-- TASK-001: Timer limit expanded to 10 hours with smooth circle animation
-  - `index.html`:338-348 — Adjusted `.wheel-container` width to `70px` to fit two wheels side by side.
-  - `index.html`:647-659 — Replaced the single minute column with hour (`#hourWheelEl`) and minute (`#minuteWheelEl`) wheels.
-  - `index.html`:791-874 — Created continuous interpolation for wave function (blending `numWaves` `Math.floor` and `Math.ceil` linearly) so the shape changes seamlessly as time dynamically shifts.
-  - `index.html`:1084-1223 — Transformed the wheel code to support a state map of wheel configs (`wheels: {h: ..., m: ...}`). Applied live timer updates globally so the shape reflects user slide gestures organically.
+- TASK-002: In-circle independent time pickers (HR/MIN/SEC)
+  - `index.html`:222-243 — Updated `.ring-center` to act as a flex container and toggles visibility via `.setting` and `.running` classes.
+  - `index.html`:402-498 — Updated `.wheel-container` CSS to be narrower (`64px` width, `150px` height) to fit 3 wheels natively inside the circle radius.
+  - `index.html`:825-835 — Moved wheels markup inside `<div class="ring-center setting" id="ringCenter">` and created a third wheel for seconds (`#secondWheelEl`).
+  - `index.html`:1173-1226 — Updated JavaScript `toggleTimer()`, `resetTimer()`, and `timerDone()` to toggle `.setting` and `.running` classes on `ringCenter`, handling the UI swap between wheels and the static countdown text.
+  - `index.html`:1301-1492 — Added `wheels.s` configuration object and updated the math inside `getWheelFloatSecs()`, `applyWheelValue()`, and `updateClock()` to parse HR/MIN/SEC appropriately.
 
 ### Decisions (and why)
-- Chose linear interpolation of sine functions in `drawWavyArc(..., wavesFloat)` rather than scaling phase/frequency because it's the only mathematically sound way to dynamically morph the number of contiguous periods around a closed circle without abrupt geometric gaps.
-- Allowed live `getWheelFloatSecs()` updates during finger dragging rather than on-snap so the circle explicitly reacts natively to user touch per the "when user is setting up the timer, animation ... should change smoothly" requirement.
+- Chose to manage wheel vs static text visibility via CSS classes (`.setting` / `.running`) toggled on the parent `#ringCenter` rather than dynamically tearing down/building DOM nodes to match the iOS-style "flip" behavior gracefully without losing wheel state/scroll offset.
+- Maintained independent mathematical offsets for each wheel but unified their calculation into total seconds when rendering the ring progress shape, fulfilling the "Hours don't affect to minutes and seconds" requirement.
 
 ### Next
 - No issues found. Work fully satisfies constraints.

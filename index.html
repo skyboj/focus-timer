@@ -583,11 +583,7 @@
       transition: opacity 0.22s ease 0.04s, transform 0.22s ease 0.04s;
     }
 
-    .app.focus-mode .wheel-section {
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.22s ease 0.08s, transform 0.22s ease 0.08s;
-    }
+
 
     /* Focus overlay buttons */
     .focus-overlay {
@@ -720,25 +716,13 @@
 
     /* ── SHORT PORTRAIT (e.g. iPhone SE, short browser windows) ── */
     @media (max-height: 650px) and (orientation: portrait) {
-      .btn-play {
-        width: 62px;
-        height: 62px;
-        font-size: 22px;
-      }
-
-      .btn-sec {
-        width: 44px;
-        height: 44px;
-        font-size: 16px;
-      }
-
-      .wheel-item {
-        font-size: 24px;
-      }
-
-      .focus-btn {
-        height: clamp(54px, 8svh, 72px);
-      }
+      .btn-play { width: 62px; height: 62px; font-size: 22px; }
+      .btn-sec  { width: 44px; height: 44px; font-size: 16px; }
+      .wheel-item { font-size: 22px; height: 40px; }
+      .wheel-container { height: 120px; width: 54px; }
+      .wheel-highlight { height: 40px; top: 40px; }
+      .wheel-fade { height: 40px; }
+      .focus-btn { height: clamp(54px, 8svh, 72px); }
     }
 
     /* ── LANDSCAPE ON PHONES — two-column layout ── */
@@ -789,13 +773,10 @@
         font-size: 15px;
       }
 
-      .wheel-section {
-        margin-top: 4px;
-      }
-
-      .wheel-item {
-        font-size: 22px;
-      }
+      .wheel-item { font-size: 20px; height: 36px; }
+      .wheel-container { height: 108px; width: 48px; }
+      .wheel-highlight { height: 36px; top: 36px; }
+      .wheel-fade { height: 36px; }
 
       .focus-btn {
         height: 56px;
@@ -821,8 +802,45 @@
     <div class="scroll-area">
       <div class="ring-wrap" id="ringWrap">
         <canvas class="ring-canvas" id="ringCanvas"></canvas>
-        <div class="ring-center">
+        <div class="ring-center setting" id="ringCenter">
           <div class="time-display" id="timeDisplay">05:00</div>
+          
+          <div class="wheel-row">
+            <div class="wheel-col">
+              <div class="wheel-container" id="hourWheelEl">
+                <div class="wheel-drum" id="hourDrum"></div>
+                <div class="wheel-highlight"></div>
+                <div class="wheel-fade wheel-fade-top"></div>
+                <div class="wheel-fade wheel-fade-bottom"></div>
+              </div>
+              <span class="wheel-unit">hr</span>
+            </div>
+
+            <span style="font-size:24px; font-weight:300; margin-top:-18px; opacity: 0.3;">:</span>
+
+            <div class="wheel-col">
+              <div class="wheel-container" id="minuteWheelEl">
+                <div class="wheel-drum" id="minuteDrum"></div>
+                <div class="wheel-highlight"></div>
+                <div class="wheel-fade wheel-fade-top"></div>
+                <div class="wheel-fade wheel-fade-bottom"></div>
+              </div>
+              <span class="wheel-unit">min</span>
+            </div>
+
+            <span style="font-size:24px; font-weight:300; margin-top:-18px; opacity: 0.3;">:</span>
+
+            <div class="wheel-col">
+              <div class="wheel-container" id="secondWheelEl">
+                <div class="wheel-drum" id="secondDrum"></div>
+                <div class="wheel-highlight"></div>
+                <div class="wheel-fade wheel-fade-top"></div>
+                <div class="wheel-fade wheel-fade-bottom"></div>
+              </div>
+              <span class="wheel-unit">sec</span>
+            </div>
+          </div>
+
           <div class="time-label" id="timeLabel">ready</div>
         </div>
         <div class="voice-pill" id="voicePill">voice</div>
@@ -837,26 +855,6 @@
 
         <div class="voice-log">
           <div class="voice-msg" id="voiceMsg"></div>
-        </div>
-
-        <div class="wheel-section" id="wheelSection">
-          <div class="wheel-row">
-            <div class="wheel-container" id="hourWheelEl">
-              <div class="wheel-drum" id="hourDrum"></div>
-              <div class="wheel-highlight"></div>
-              <div class="wheel-fade wheel-fade-top"></div>
-              <div class="wheel-fade wheel-fade-bottom"></div>
-            </div>
-            <span class="wheel-unit" style="margin-right: 14px;">hr</span>
-
-            <div class="wheel-container" id="minuteWheelEl">
-              <div class="wheel-drum" id="minuteDrum"></div>
-              <div class="wheel-highlight"></div>
-              <div class="wheel-fade wheel-fade-top"></div>
-              <div class="wheel-fade wheel-fade-bottom"></div>
-            </div>
-            <span class="wheel-unit">min</span>
-          </div>
         </div>
       </div>
     </div>
@@ -1555,7 +1553,23 @@
       initCanvas();
       buildWheel(); // sets initial time from wheel, calls refreshRing + updateClock
     });
-    window.addEventListener('resize', () => { initCanvas(); if (!blinkTick) refreshRing(); });
+    window.addEventListener('resize', () => {
+      initCanvas();
+      if (!blinkTick) refreshRing();
+
+      // Handle ITEM_H recalculation on resize for responsive wheels
+      const newH = getDynamicItemHeight();
+      if (ITEM_H !== newH) {
+        ITEM_H = newH;
+        CENTER_OFF = (VISIBLE - 1) / 2 * ITEM_H;
+        // Keep internal values conceptually synced by snapping to the nearest whole index
+        ['h', 'm', 's'].forEach(id => {
+          const w = wheels[id];
+          const idx = off2idx(w.offset); // approx
+          snapToIdx(w, Math.round((CENTER_OFF - w.offset) / ITEM_H));
+        });
+      }
+    });
   </script>
 </body>
 
