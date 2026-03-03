@@ -67,7 +67,10 @@
     justify-content: space-between;
     padding: 10px 0 4px;
     flex-shrink: 0;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    overflow: hidden;
+    max-height: 60px;
+    transition: opacity 0.5s ease, transform 0.5s ease,
+                max-height 0.5s ease, padding 0.5s ease;
   }
 
   .app-title {
@@ -100,7 +103,10 @@
     margin-bottom: 4px;
     flex-shrink: 0;
     text-align: center;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    overflow: hidden;
+    max-height: 20px;
+    transition: opacity 0.5s ease, transform 0.5s ease,
+                max-height 0.5s ease, margin 0.5s ease;
   }
 
   .scroll-area {
@@ -111,6 +117,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
   }
 
   /* Ring */
@@ -327,8 +334,11 @@
     opacity: 0;
     pointer-events: none;
     transform: translateY(-12px);
+    max-height: 0;
     /* transition is on base selectors — handles both enter and exit */
   }
+  .app.focus-mode .header  { padding: 0; }
+  .app.focus-mode .task-label { margin: 0; }
 
   .app.focus-mode .scroll-area {
     justify-content: center;
@@ -342,16 +352,11 @@
                 margin 0.6s ease;
   }
   .app.focus-mode .ring-wrap {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    translate: -50% -50%;
-    /* cap height so the ring never covers the overlay buttons:
-       max ring = svh minus 2× overlay height (88px) → 176px, plus a small buffer */
-    width: min(100vw, calc(100svh - 180px)) !important;
-    height: min(100vw, calc(100svh - 180px)) !important;
+    /* Stay in normal flow — no position:fixed so there is no jump.
+       Flexbox + max-height animations smoothly drift the ring to center. */
+    width:  min(calc(100vw - 36px), calc(100svh - 180px));
+    height: min(calc(100vw - 36px), calc(100svh - 180px));
     margin: 0;
-    z-index: 50;
   }
 
   /* Bottom section collapses smoothly */
@@ -472,12 +477,8 @@
     filter: drop-shadow(0 0 4px rgba(77,255,195,0.7));
   }
 
-  /* Voice pill in focus mode — stays visible inside ring */
-  .app.focus-mode .voice-pill {
-    bottom: auto;
-    top: calc(50% + 36px);
-    font-size: 10px;
-  }
+  /* Voice pill: ring is now in normal flow, so base bottom:-14px positioning works fine.
+     No focus-mode override needed. */
 
   /* ── SHORT PORTRAIT (e.g. iPhone SE, short browser windows) ── */
   @media (max-height: 650px) and (orientation: portrait) {
